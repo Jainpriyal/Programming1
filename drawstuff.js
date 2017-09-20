@@ -467,7 +467,77 @@ function drawEllipsoidUsingRaycasting(context)
                 //    + "  " + typeof(inputEllipsoids[targetEllipsoid].diffuse[1]*255))
                 //console.log("x window:" + windowpixel[i].x + "y window: " + windowpixel[i].y);
                 //console.log("x" + (Math.round(windowpixel[i].x * w)) + "y: " + Math.round(windowpixel[i].y * h));
-                drawPixel(imagedata, (Math.round(windowpixel[i].x * w)), h-Math.round(windowpixel[i].y * h),pixelColor);
+                //drawPixel(imagedata, (Math.round(windowpixel[i].x * w)), h-Math.round(windowpixel[i].y * h),pixelColor);
+
+                //part2: color ellipsoid using blinn phong
+                //ambient + diffuse + specular = color
+
+                var totalColor = new Color(0,0,0,255);
+                var ambientColor = new Color(0,0,0,255);
+                var diffuseColor = new Color(0,0,0,255);
+                var specularColor = new Color(0,0,0,255);
+
+                //intersection point is
+                //E + Dt = 
+                var intersectionPoint = Vector.add(eye, Vector.scale(minroot, pixelEyeDiff));
+
+                //calculate light vector
+                var lightVector = Vector.subtract(lightPosition, intersectionPoint);
+                lightVector = Vector.normalize(lightVector);
+
+                //calculate normal vector
+                var normalVector1 = new Vector(intersectionPoint.x - inputEllipsoids[targetEllipsoid].x,
+                                             intersectionPoint.y - inputEllipsoids[targetEllipsoid].y,
+                                             intersectionPoint.z - inputEllipsoids[targetEllipsoid].z);
+                var ellipsoidRadius = new Vector(inputEllipsoids[targetEllipsoid].a, 
+                                            inputEllipsoids[targetEllipsoid].b,
+                                            inputEllipsoids[targetEllipsoid].c);
+                var radiusSquare = new Vector(inputEllipsoids[targetEllipsoid].a*inputEllipsoids[targetEllipsoid].a,
+                                             inputEllipsoids[targetEllipsoid].b*inputEllipsoids[targetEllipsoid].b,
+                                             inputEllipsoids[targetEllipsoid].c*inputEllipsoids[targetEllipsoid].c);
+
+                var normalVector = new Vector(normalVector1.x/ellipsoidRadius.x, 
+                                        normalVector1.y/ellipsoidRadius.y, 
+                                        normalVector1.z/ellipsoidRadius.z);
+
+                normalVector = Vector.scale(2, normalVector);
+                normalVector = Vector.normalize(normalVector);
+
+                var NdotproductL = Vector.dot(normalVector, lightVector);
+
+                //calculate ambient color
+                //Ka*La 
+                ambientColor.r = inputEllipsoids[targetEllipsoid].ambient[0] * lightColor.r/255;
+                ambientColor.g = inputEllipsoids[targetEllipsoid].ambient[1] * lightColor.g/255;
+                ambientColor.b = inputEllipsoids[targetEllipsoid].ambient[2] * lightColor.b/255;
+
+                //calculate diffuse color
+                //Kd*Ld*(N•L) 
+                diffuseColor.r = inputEllipsoids[targetEllipsoid].diffuse[0] * lightColor.r/255 * NdotproductL;
+                diffuseColor.g = inputEllipsoids[targetEllipsoid].diffuse[1] * lightColor.g/255 * NdotproductL;
+                diffuseColor.b = inputEllipsoids[targetEllipsoid].diffuse[2] * lightColor.b/255 * NdotproductL;
+
+
+                //calculate specular color
+                //specular color = Ks*Ls*(N•H)^n
+                var vVector = Vector.subtract(eye, intersectionPoint);
+                var hVector = Vector.add(vVector, lightVector);
+                var hVector = Vector.normalize(hVector);
+
+                var NdotH = Vector.dot(normalVector,hVector);
+
+                var NdotHpower = Math.pow(NdotH, inputEllipsoids[targetEllipsoid].n);
+                specularColor.r = inputEllipsoids[targetEllipsoid].specular[0] * lightColor.r/255 * NdotHpower;
+                specularColor.g = inputEllipsoids[targetEllipsoid].specular[1] * lightColor.g/255 * NdotHpower;
+                specularColor.b = inputEllipsoids[targetEllipsoid].specular[2] * lightColor.b/255 * NdotHpower;
+
+
+                //total color
+                totalColor.r = (ambientColor.r + diffuseColor.r + specularColor.r)*255;
+                totalColor.g = (ambientColor.g + diffuseColor.g + specularColor.g)*255;
+                totalColor.b = (ambientColor.b + diffuseColor.b + specularColor.b)*255;
+
+                drawPixel(imagedata, (Math.round(windowpixel[i].x * w)), h-Math.round(windowpixel[i].y * h), totalColor);
             }
             else{
                 //fill background color
