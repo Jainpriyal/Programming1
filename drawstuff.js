@@ -5,11 +5,20 @@ class Color {
     constructor(r,g,b,a) {
         try {
             if ((typeof(r) !== "number") || (typeof(g) !== "number") || (typeof(b) !== "number") || (typeof(a) !== "number"))
+                {
+                //console.log("1");
                 throw "color component not a number";
-            else if ((r<0) || (g<0) || (b<0) || (a<0)) 
+                }
+            else if ((r<0) || (g<0) || (b<0) || (a<0))
+            {
+                //console.log("2"); 
                 throw "color component less than 0";
+            }
             else if ((r>255) || (g>255) || (b>255) || (a>255)) 
+            {
+                //console.log("3");
                 throw "color component bigger than 255";
+            }
             else {
                 this.r = r; this.g = g; this.b = b; this.a = a; 
             }
@@ -40,6 +49,145 @@ class Color {
     } // end Color change method
 } // end color class
 
+// Vector class
+//taken from exercise4
+class Vector { 
+    constructor(x,y,z) {
+        this.set(x,y,z);
+    } // end constructor
+    
+    // sets the components of a vector
+    set(x,y,z) {
+        try {
+            if ((typeof(x) !== "number") || (typeof(y) !== "number") || (typeof(z) !== "number"))
+                throw "vector component not a number";
+            else
+                this.x = x; this.y = y; this.z = z; 
+        } // end try
+        
+        catch(e) {
+            console.log(e);
+        }
+    } // end vector set
+    
+    // copy the passed vector into this one
+    copy(v) {
+        try {
+            if (!(v instanceof Vector))
+                throw "Vector.copy: non-vector parameter";
+            else
+                this.x = v.x; this.y = v.y; this.z = v.z;
+        } // end try
+        
+        catch(e) {
+            console.log(e);
+        }
+    }
+    
+    toConsole(prefix="") {
+        console.log(prefix+"["+this.x+","+this.y+","+this.z+"]");
+    } // end to console
+    
+    // static dot method
+    static dot(v1,v2) {
+        try {
+            if (!(v1 instanceof Vector) || !(v2 instanceof Vector))
+                throw "Vector.dot: non-vector parameter";
+            else
+                return(v1.x*v2.x + v1.y*v2.y + v1.z*v2.z);
+        } // end try
+        
+        catch(e) {
+            console.log(e);
+            return(NaN);
+        }
+    } // end dot static method
+    
+    // static cross method
+    static cross(v1,v2) {
+        try {
+            if (!(v1 instanceof Vector) || !(v2 instanceof Vector))
+                throw "Vector.cross: non-vector parameter";
+            else {
+                var crossX = v1.y*v2.z - v1.z*v2.y;
+                var crossY = v1.z*v2.x - v1.x*v2.z;
+                var crossZ = v1.x*v2.y - v1.y*v2.x;
+                return(new Vector(crossX,crossY,crossZ));
+            } // endif vector params
+        } // end try
+        
+        catch(e) {
+            console.log(e);
+            return(NaN);
+        }
+    } // end dot static method
+    
+    // static add method
+    static add(v1,v2) {
+        try {
+            if (!(v1 instanceof Vector) || !(v2 instanceof Vector))
+                throw "Vector.add: non-vector parameter";
+            else
+                return(new Vector(v1.x+v2.x,v1.y+v2.y,v1.z+v2.z));
+        } // end try
+        
+        catch(e) {
+            console.log(e);
+            return(new Vector(NaN,NaN,NaN));
+        }
+    } // end add static method
+
+    // static subtract method, v1-v2
+    static subtract(v1,v2) {
+        try {
+            if (!(v1 instanceof Vector) || !(v2 instanceof Vector))
+                throw "Vector.subtract: non-vector parameter";
+            else {
+                var v = new Vector(v1.x-v2.x,v1.y-v2.y,v1.z-v2.z);
+                return(v);
+            }
+        } // end try
+        
+        catch(e) {
+            console.log(e);
+            return(new Vector(NaN,NaN,NaN));
+        }
+    } // end subtract static method
+
+    // static scale method
+    static scale(c,v) {
+        try {
+            if (!(typeof(c) === "number") || !(v instanceof Vector))
+                throw "Vector.scale: malformed parameter";
+            else
+                return(new Vector(c*v.x,c*v.y,c*v.z));
+        } // end try
+        
+        catch(e) {
+            console.log(e);
+            return(new Vector(NaN,NaN,NaN));
+        }
+    } // end scale static method
+    
+    // static normalize method
+    static normalize(v) {
+        try {
+            if (!(v instanceof Vector))
+                throw "Vector.normalize: parameter not a vector";
+            else {
+                var lenDenom = 1/Math.sqrt(Vector.dot(v,v));
+                return(Vector.scale(lenDenom,v));
+            }
+        } // end try
+        
+        catch(e) {
+            console.log(e);
+            return(new Vector(NaN,NaN,NaN));
+        }
+    } // end scale static method
+    
+} // end Vector class
+
 
 /* utility functions */
 
@@ -48,8 +196,10 @@ function drawPixel(imagedata,x,y,color) {
     try {
         if ((typeof(x) !== "number") || (typeof(y) !== "number"))
             throw "drawpixel location not a number";
-        else if ((x<0) || (y<0) || (x>=imagedata.width) || (y>=imagedata.height))
+        else if ((x<0) || (y<0) || (x>=imagedata.width) || (y>=imagedata.height)){
+            //console.log("x:" + x + " y: " + y);
             throw "drawpixel location outside of image";
+        }
         else if (color instanceof Color) {
             var pixelindex = (y*imagedata.width + x) * 4;
             imagedata.data[pixelindex] = color.r;
@@ -194,6 +344,143 @@ function drawInputEllipsoidsUsingArcs(context) {
     } // end if ellipsoids found
 } // end draw input ellipsoids
 
+function getWindowPixel(canvasWidth, canvasHeight)
+{
+    var windowPixels = [];
+    //for (var i = 0; i<= 1; i= i+ (1/canvasWidth))
+    //j = j+ (1/canvasHeight)
+    for (var i = 0; i< 1; i= i+0.0015)
+    {
+        for(var j=0; j<1; j= j+0.0015)
+        {
+            var pixelVal = new Vector(0,0,0);
+            pixelVal.x = i;
+            pixelVal.y= j;
+            pixelVal.z = 0; // z ais will always be 0 
+            windowPixels.push(pixelVal);
+           // console.log(" pixelVal:" + "x:" + pixelVal.x + " y:" + pixelVal.y
+           //     + " z:" + pixelVal.z + "pixelval: " + pixelVal)
+           // console.log(" windowPixels: x:" + windowPixels[0].x + " y:" + windowPixels[0].y 
+           //     + " z:" + windowPixels[0].z);
+        }
+    }
+   // console.log("windowPixels:" + windowPixels);
+    return windowPixels;
+}
+
+//function to draw ellipsoid using raycasting
+function drawEllipsoidUsingRaycasting(context)
+{
+    var w = context.canvas.width;
+    var h = context.canvas.height;
+    var inputEllipsoids = getInputEllipsoids();
+    var imagedata = context.createImageData(w,h);
+    var backgroundColor = new Color(0,0,0,255) //background is black
+
+    //attributes given in question
+    var eye = new Vector(0.5,0.5,-0.5);
+    var viewUp = new Vector(0,1,0);
+    var lookat = new Vector(0,0,1);
+    var windowCenter = new Vector(0.5,0.5,0);
+    var lightPosition = new Vector(-1,3,-0.5);
+    var lightColor = new Color(255,255,255,255); //white light
+
+    //doubt1111111 might need to change this
+    var windowpixel = getWindowPixel(w,h); 
+
+    //step2.a determine D (P-E) vector for all pixel vectors
+    // var pixelEyeDiff = [];
+    // for(var i =0; i<windowpixel.length; i=i+1)
+    // // for(var i =0; i<10; i=i+1)
+    // {
+    //     var diffVal = Vector.subtract(windowpixel[i], eye);
+    //     pixelEyeDiff.push(diffVal);
+    // } 
+
+    if (inputEllipsoids != String.null) { 
+
+        //calculate for all pixels where they are intersecting
+        for(var i=0; i<windowpixel.length; i++)
+        {
+            pixelEyeDiff = Vector.subtract(windowpixel[i], eye);
+            //check for all ellipsoid, point of intersection and target ellipsoid
+            var root1 =0, root2 =0;
+            var minroot = 10000000;
+            var targetEllipsoid = -1;
+            for(var e=0; e<inputEllipsoids.length; e++)
+            {
+                //calculate t for equation at2 + bt + c =0
+                
+                //a= D/A.D/A
+                var dDivideA = new Vector(pixelEyeDiff.x/inputEllipsoids[e].a,
+                    pixelEyeDiff.y/inputEllipsoids[e].b, pixelEyeDiff.z/inputEllipsoids[e].c);
+                var a = Vector.dot(dDivideA, dDivideA);
+
+                //b = 2 D/A•(E-C)/A
+                var dDivideA_2= Vector.scale(2, dDivideA);
+                var eyeMinusC = new Vector(eye.x - inputEllipsoids[e].x, 
+                    eye.y - inputEllipsoids[e].y, eye.z - inputEllipsoids[e].z);
+                var eyeMinusCdivideA = new Vector(eyeMinusC.x/inputEllipsoids[e].a, 
+                    eyeMinusC.y/inputEllipsoids[e].b, eyeMinusC.z/inputEllipsoids[e].c);
+                var b = Vector.dot(dDivideA_2, eyeMinusCdivideA);
+
+
+                //c = (E-C)/A•(E-C)/A - 1
+                var c = (Vector.dot(eyeMinusCdivideA, eyeMinusCdivideA) -1);
+
+                var discriminant = Math.pow(b,2) - 4 * a * c;
+                if(discriminant>=0)
+                {
+                    //console.log("greater than 0" + discriminant);
+                    //calculate roots
+                    var root1 = (-1*b + Math.sqrt(discriminant))/(2*a);
+                    var root2 = (-1*b - Math.sqrt(discriminant))/(2*a);
+
+                    //determine the smallest root and also greater than 1
+                    if(root1>1 && root2 > 1)
+                    {
+                        minroot = Math.min(root1, root2);
+                        targetEllipsoid = e;
+                    }
+                    else if(root1>1)
+                    {
+                        minroot = root1;
+                        targetEllipsoid = e;
+                    }
+                    else if(root2>1)
+                    {
+                        minroot = root2;
+                        targetEllipsoid = e;
+                    }
+                }
+            }
+
+            //Now we have target ellipsoid, root that will give point of intrsection
+            //calculate the color to fill in
+            if(targetEllipsoid>=0)
+            {
+                //part1: draw ellipsoid using raycasting
+                var pixelColor = new Color(inputEllipsoids[targetEllipsoid].diffuse[0]*255,
+                    inputEllipsoids[targetEllipsoid].diffuse[1]*255,
+                    inputEllipsoids[targetEllipsoid].diffuse[2]*255, 255);
+                //console.log("inputEllipsoids[targetEllipsoid].diffuse[0]*255" + inputEllipsoids[targetEllipsoid].diffuse[1]*255
+                //    + "  " + typeof(inputEllipsoids[targetEllipsoid].diffuse[1]*255))
+                //console.log("x window:" + windowpixel[i].x + "y window: " + windowpixel[i].y);
+                //console.log("x" + (Math.round(windowpixel[i].x * w)) + "y: " + Math.round(windowpixel[i].y * h));
+                drawPixel(imagedata, (Math.round(windowpixel[i].x * w)), h-Math.round(windowpixel[i].y * h),pixelColor);
+            }
+            else{
+                //fill background color
+                //console.log("black background");
+                //console.log("h-(Math.round(windowpixel[i].y * h))   ***r4yiur4ur*" + h-(Math.round(windowpixel[i].y * h)));
+                drawPixel(imagedata, (Math.round(windowpixel[i].x * w)), h-Math.round(windowpixel[i].y * h), backgroundColor);
+            }
+
+        }
+    }
+    context.putImageData(imagedata, 0, 0);
+    
+}
 
 /* main -- here is where execution begins after window load */
 
@@ -210,7 +497,8 @@ function main() {
     //drawRandPixelsInInputEllipsoids(context);
       // shows how to draw pixels and read input file
       
-    drawInputEllipsoidsUsingArcs(context);
+   // drawInputEllipsoidsUsingArcs(context);
       // shows how to read input file, but not how to draw pixels
-}
 
+    drawEllipsoidUsingRaycasting(context);
+}
