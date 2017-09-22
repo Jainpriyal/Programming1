@@ -361,24 +361,24 @@ function getWindowPixel(canvasWidth, canvasHeight, window_width, window_height, 
 
     UL.x = windowCenter.x - (window_width/2);
     UL.y = windowCenter.y + (window_height/2); //UL= {0,1}
-    console.log("UL.x 0: " + UL.x + "UL.y: 1" + UL.y);
+    //console.log("UL.x 0: " + UL.x + "UL.y: 1" + UL.y);
 
     UR.x = windowCenter.x + (window_width/2);
     UR.y = windowCenter.y + (window_height/2); //UR= {1,1}
-    console.log("UR.x 1: " + UR.x + "UR.y: 1" + UR.y);
+    //console.log("UR.x 1: " + UR.x + "UR.y: 1" + UR.y);
 
     LL.x = windowCenter.x - (window_width/2);
     LL.y = windowCenter.y - (window_height/2); //LL= {0, 0}
-    console.log("LL.x 0: " + LL.x + "LL.y: 0" + LL.y);
+    //console.log("LL.x 0: " + LL.x + "LL.y: 0" + LL.y);
 
 
     LR.x = windowCenter.x + (window_width/2);
     LR.y = windowCenter.y - (window_height/2); //LR= {1,0}
-    console.log("LR.x 1: " + LR.x + "LR.y: 0" + LR.y);
+    //console.log("LR.x 1: " + LR.x + "LR.y: 0" + LR.y);
 
 
-    console.log("LL.x:" + LL.x + "windowCenter.x: " + windowCenter.x + "(window_width/2):" + (window_width/2));
-    console.log("LL.y: " + LL.y);
+    //console.log("LL.x:" + LL.x + "windowCenter.x: " + windowCenter.x + "(window_width/2):" + (window_width/2));
+    //console.log("LL.y: " + LL.y);
     // console.log("windowCenter.x: " + windowCenter.x);
     // console.log("window_width: "+ (window_width/2));
 
@@ -402,45 +402,32 @@ function getWindowPixel(canvasWidth, canvasHeight, window_width, window_height, 
 }
 
 //function to draw ellipsoid using raycasting
-function drawEllipsoidUsingRaycasting(context)
+function drawEllipsoidUsingRaycasting(context, w, h, windowWidth, windowHeight, windowCenter, eye)
 {
     //var w = context.canvas.width;
     //var h = context.canvas.height;
-    var w= parseFloat(document.getElementById("canvas_width").value);
-    var h = parseFloat(document.getElementById("canvas_height").value);
+     //context.canvas.width= parseFloat(document.getElementById("canvas_width").value);
+     //context.canvas.height = parseFloat(document.getElementById("canvas_height").value);
 
+    // console.log("canvas width: " + w);
+    // console.log("canvas height: " + h);
 
     var inputEllipsoids = getInputEllipsoids();
     var imagedata = context.createImageData(w,h);
     var backgroundColor = new Color(0,0,0,255) //background is black
 
-    //attributes given in question
-    // var eye = new Vector(0.5,0.5,-0.5);
-    var eye_x = parseFloat(document.getElementById("eye_x").value);
-    var eye_y = parseFloat(document.getElementById("eye_y").value);
-    var eye_z = parseFloat(document.getElementById("eye_z").value);
-    var eye = new Vector(eye_x, eye_y, eye_z);
-
     var shadow = document.getElementById("shadow").checked;
-    console.log("shaodow: "+ shadow);
+    //console.log("shaodow: "+ shadow);
 
-    var viewUp = new Vector(0,1,0);
-    var lookat = new Vector(0,0,1);
-
-    //window dimensions
-    var windowWidth = parseFloat(document.getElementById("window_width").value);
-    var windowHeight = parseFloat(document.getElementById("window_height").value);
-
-    //var windowCenter = new Vector(0.5,0.5,0);
-    var windowCenter_x = parseFloat(document.getElementById("window_centerX").value);
-    var windowCenter_y = parseFloat(document.getElementById("window_centerY").value);
-    var windowCenter_z = parseFloat(document.getElementById("window_centerZ").value);
-    var windowCenter = new Vector(windowCenter_x, windowCenter_y, windowCenter_z);
+    // var viewUp = new Vector(0,1,0);
+    // var lookat = new Vector(0,0,1);
     
     var lightPosition = new Vector(-1,3,-0.5);
     var lightColor = new Color(255,255,255,255); //white light
 
-    //doubt1111111 might need to change this
+    // console.log(w);
+    // console.log(h);
+    // //doubt1111111 might need to change this
     var windowpixel = getWindowPixel(w, h, windowWidth, windowHeight, windowCenter); 
 
     //step2.a determine D (P-E) vector for all pixel vectors
@@ -479,12 +466,11 @@ function drawEllipsoidUsingRaycasting(context)
                     eyeMinusC.y/inputEllipsoids[e].b, eyeMinusC.z/inputEllipsoids[e].c);
                 var b = Vector.dot(dDivideA_2, eyeMinusCdivideA);
 
-
                 //c = (E-C)/A•(E-C)/A - 1
                 var c = (Vector.dot(eyeMinusCdivideA, eyeMinusCdivideA) -1);
 
                 var discriminant = Math.pow(b,2) - 4 * a * c;
-                if(discriminant>=0)
+                if(discriminant>0)
                 {
                     //console.log("greater than 0" + discriminant);
                     //calculate roots
@@ -510,7 +496,7 @@ function drawEllipsoidUsingRaycasting(context)
                 }
             }
 
-            //Now we have target ellipsoid, root that will give point of intrsection
+            //Now we have target ellipsoid, root that will give point of intersection
             //calculate the color to fill in
             if(targetEllipsoid>=0)
             {
@@ -569,10 +555,12 @@ function drawEllipsoidUsingRaycasting(context)
 
                 //calculate diffuse color
                 //Kd*Ld*(N•L) 
-                diffuseColor.r = inputEllipsoids[targetEllipsoid].diffuse[0] * lightColor.r/255 * NdotproductL;
-                diffuseColor.g = inputEllipsoids[targetEllipsoid].diffuse[1] * lightColor.g/255 * NdotproductL;
-                diffuseColor.b = inputEllipsoids[targetEllipsoid].diffuse[2] * lightColor.b/255 * NdotproductL;
-
+                if(NdotproductL>0)
+                {
+                    diffuseColor.r = inputEllipsoids[targetEllipsoid].diffuse[0] * lightColor.r/255 * NdotproductL;
+                    diffuseColor.g = inputEllipsoids[targetEllipsoid].diffuse[1] * lightColor.g/255 * NdotproductL;
+                    diffuseColor.b = inputEllipsoids[targetEllipsoid].diffuse[2] * lightColor.b/255 * NdotproductL;
+                }
 
                 //calculate specular color
                 //specular color = Ks*Ls*(N•H)^n
@@ -582,11 +570,12 @@ function drawEllipsoidUsingRaycasting(context)
                 var hVector = Vector.normalize(hVector);
 
                 var NdotH = Vector.dot(normalVector,hVector);
-
-                var NdotHpower = Math.pow(NdotH, inputEllipsoids[targetEllipsoid].n);
-                specularColor.r = inputEllipsoids[targetEllipsoid].specular[0] * lightColor.r/255 * NdotHpower;
-                specularColor.g = inputEllipsoids[targetEllipsoid].specular[1] * lightColor.g/255 * NdotHpower;
-                specularColor.b = inputEllipsoids[targetEllipsoid].specular[2] * lightColor.b/255 * NdotHpower;
+                if(NdotH>0){
+                    var NdotHpower = Math.pow(NdotH, inputEllipsoids[targetEllipsoid].n);
+                    specularColor.r = inputEllipsoids[targetEllipsoid].specular[0] * lightColor.r/255 * NdotHpower;
+                    specularColor.g = inputEllipsoids[targetEllipsoid].specular[1] * lightColor.g/255 * NdotHpower;
+                    specularColor.b = inputEllipsoids[targetEllipsoid].specular[2] * lightColor.b/255 * NdotHpower;
+                }
 
                 if(shadow){
                     totalColor.r = ambientColor.r *255;
@@ -599,15 +588,14 @@ function drawEllipsoidUsingRaycasting(context)
                 totalColor.g = (ambientColor.g + diffuseColor.g + specularColor.g)*255;
                 totalColor.b = (ambientColor.b + diffuseColor.b + specularColor.b)*255;
                 }
+                //need to flip the color
                 drawPixel(imagedata, (Math.round(windowpixel[i].x * w)), h-Math.round(windowpixel[i].y * h), totalColor);
             }
             else{
                 //fill background color
                 //console.log("black background");
-                //console.log("h-(Math.round(windowpixel[i].y * h))   ***r4yiur4ur*" + h-(Math.round(windowpixel[i].y * h)));
                 drawPixel(imagedata, (Math.round(windowpixel[i].x * w)), h-Math.round(windowpixel[i].y * h), backgroundColor);
             }
-
         }
     }
     context.putImageData(imagedata, 0, 0);
@@ -624,13 +612,48 @@ function main() {
  
     // Create the image
     //drawRandPixels(context);
-      // shows how to draw pixels
+    // shows how to draw pixels
     
     //drawRandPixelsInInputEllipsoids(context);
-      // shows how to draw pixels and read input file
+    // shows how to draw pixels and read input file
       
-   // drawInputEllipsoidsUsingArcs(context);
-      // shows how to read input file, but not how to draw pixels
+    // drawInputEllipsoidsUsingArcs(context);
+    // shows how to read input file, but not how to draw pixels
 
-    drawEllipsoidUsingRaycasting(context);
+    canvas.width = parseFloat(document.getElementById("canvas_width").value);
+    canvas.height = parseFloat(document.getElementById("canvas_height").value);
+
+    //attributes given in question
+    // var eye = new Vector(0.5,0.5,-0.5);
+    var eye_x = parseFloat(document.getElementById("eye_x").value);
+    var eye_y = parseFloat(document.getElementById("eye_y").value);
+    var eye_z = parseFloat(document.getElementById("eye_z").value);
+    var eye = new Vector(eye_x, eye_y, eye_z);
+
+    // var viewUp = new Vector(0,1,0);
+    var viewup_x = parseFloat(document.getElementById("viewup_x").value);
+    var viewup_y = parseFloat(document.getElementById("viewup_y").value);
+    var viewup_z = parseFloat(document.getElementById("viewup_z").value);
+    var viewup = new Vector(viewup_x, viewup_y, viewup_z);
+
+    // var lookat = new Vector(0,0,1);
+    var lookat_x = parseFloat(document.getElementById("lookat_x").value);
+    var lookat_y = parseFloat(document.getElementById("lookat_y").value);
+    var lookat_z = parseFloat(document.getElementById("lookat_z").value);
+    var lookat = new Vector(lookat_x, lookat_y, lookat_z);
+
+    //console.log("canvas width: " + w);
+    //console.log("canvas height: " + h);
+    //window dimensions
+    var windowWidth = parseFloat(document.getElementById("window_width").value);
+    var windowHeight = parseFloat(document.getElementById("window_height").value);
+
+    //var windowCenter = new Vector(0.5,0.5,0);
+    var windowCenter_x = parseFloat(document.getElementById("window_centerX").value);
+    var windowCenter_y = parseFloat(document.getElementById("window_centerY").value);
+    var windowCenter_z = parseFloat(document.getElementById("window_centerZ").value);
+    var windowCenter = new Vector(windowCenter_x, windowCenter_y, windowCenter_z);
+
+    drawEllipsoidUsingRaycasting(context, canvas.width, canvas.height, windowWidth, windowHeight,
+        windowCenter, eye);
 }

@@ -5,14 +5,14 @@
 <title>Programming Assignment1</title>
 <script type="text/javascript" src="drawstuff.js"></script>
 </head>
-<body>
+<body onload="main();">
 
 <p>
-<canvas id="viewport" width="512" height="512"></canvas>
+<canvas id="viewport"></canvas>
 </p>
 
 <p>
-<label>Canvas Dimensions </label>
+<label><b>Canvas Dimensions </b></label>
 <br>
 <label>Width </label> 
 <input type="text" value="512" style="width:35px" id="canvas_width">
@@ -20,7 +20,7 @@
 <input type="text" value="512" style="width:35px" id="canvas_height">
 <br>
 <br>
-<label>Window Dimension </label>
+<label><b>Window Dimensions </b></label>
 <br>
 <label>Width</label> 
 <input type="text" value="1" style="width:35px" id="window_width">
@@ -32,7 +32,7 @@
 <input type="text" value="0" style="width:35px" id="window_centerZ">
 <br>
 <br>
-<label>Eye Position</label>
+<label><b>Eye Position</b></label>
 <br>
 <label>X</label> 
 <input type="text" value="0.5" style="width:35px" id="eye_x">
@@ -41,13 +41,30 @@
 <label>Z</label> 
 <input type="text" value="-0.5" style="width:35px" id="eye_z">
 <br>
-
-<label>shadow</label>
+<label><b>View Up</b></label>
+<br>
+<label>X</label> 
+<input type="text" value="0" style="width:35px" id="viewup_x">
+<label>Y</label> 
+<input type="text" value="1" style="width:35px" id="viewup_y">
+<label>Z</label> 
+<input type="text" value="0" style="width:35px" id="viewup_z">
+<br>
+<label><b>Look at</b></label>
+<br>
+<label>X</label> 
+<input type="text" value="0" style="width:35px" id="lookat_x">
+<label>Y</label> 
+<input type="text" value="0" style="width:35px" id="lookat_y">
+<label>Z</label> 
+<input type="text" value="1" style="width:35px" id="lookat_z">
+<br>
+<br>
+<label><b>shadow</b></label>
 <input type="checkbox" name="shadow" value="0" id="shadow">
 <br>
 <br>
-
-<input type="button" id="Submit_btn" name="Submit" value="Submit" onclick="main();">
+<input type="button" id="Submitbtn" name="Submit" value="Submit" onclick="main();">
 </p>
 
 </body>
