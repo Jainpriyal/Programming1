@@ -2,10 +2,54 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Pixel Drawing</title>
+<title>Programming Assignment1</title>
 <script type="text/javascript" src="drawstuff.js"></script>
 </head>
-<body onload="main();">
+<body>
+
+<p>
 <canvas id="viewport" width="512" height="512"></canvas>
+</p>
+
+<p>
+<label>Canvas Dimensions </label>
+<br>
+<label>Width </label> 
+<input type="text" value="512" style="width:35px" id="canvas_width">
+<label>Height </label> 
+<input type="text" value="512" style="width:35px" id="canvas_height">
+<br>
+<br>
+<label>Window Dimension </label>
+<br>
+<label>Width</label> 
+<input type="text" value="1" style="width:35px" id="window_width">
+<label>Height</label> 
+<input type="text" value="1" style="width:35px" id="window_height">
+<label>Center(x,y,z)</label>
+<input type="text" value="0.5" style="width:35px" id="window_centerX">
+<input type="text" value="0.5" style="width:35px" id="window_centerY">
+<input type="text" value="0" style="width:35px" id="window_centerZ">
+<br>
+<br>
+<label>Eye Position</label>
+<br>
+<label>X</label> 
+<input type="text" value="0.5" style="width:35px" id="eye_x">
+<label>Y</label> 
+<input type="text" value="0.5" style="width:35px" id="eye_y">
+<label>Z</label> 
+<input type="text" value="-0.5" style="width:35px" id="eye_z">
+<br>
+
+<label>shadow</label>
+<input type="checkbox" name="shadow" value="0" id="shadow">
+<br>
+<br>
+
+<input type="button" id="Submit_btn" name="Submit" value="Submit" onclick="main();">
+</p>
+
 </body>
 </html>
+
